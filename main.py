@@ -1,7 +1,11 @@
+from const import *
+import extract_data
+
 
 def main():
 
-    print("Ciao")
+    print(DATA_PATH)
+    
     ...
 
 
