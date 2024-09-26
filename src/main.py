@@ -1,20 +1,21 @@
 from const import *
 import extract_data
-from matplotlib import pyplot as plt
 from my_file import myFile
-from process_data import detect_downward_curve
+from process_data import processs
 
 
 def main():
 
     data_files : list[myFile] = extract_data.extract()
     
-    y1, y2 = data_files[0].ch1, data_files[0].ch2
+    # y1, y2 = data_files[0].ch1, data_files[0].ch2
     
-    print(detect_downward_curve(y1))
+    processs(data_files)
     
-    plt.plot(y1)
-    plt.show()
+        # print(detect_downward_curve(y1))
+    
+    # plt.plot(y1)
+    # plt.show()
     
     
     
