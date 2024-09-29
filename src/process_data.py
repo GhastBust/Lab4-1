@@ -23,10 +23,11 @@ def rescale( vec: list[float], factor: float) -> list[float] :
     return vec
 
 
-def processs( data_files: list[myFile] ) -> None :
+def fit_for_tau( data_files: list[myFile] ) -> dict[str, list[tuple[int, float]]] :
     
+    results: dict[str, list] = {"L": [], "C": []}
+        
     last_tau = 0.1
-    reset = False
     
     A_test = 5
     
@@ -49,19 +50,24 @@ def processs( data_files: list[myFile] ) -> None :
             numpy.array(discharge),
             p0 = (last_tau, A_test, 0)
         )
+        
+        if file.quantity == "capacity":
+            results["C"].append((file.meters, tau))
+            
+        elif file.quantity == "inductance":
+            results["L"].append((file.meters, tau))
+            
+        else :
+            raise "boh"
+        
                                              
-        print(tau, A, y0)
+        # print(tau, A, y0)
         last_tau = tau
         
-        plt.plot(time, discharge)
-        plt.plot(time, V(numpy.array(time), tau, A, y0))
         
-        plt.show()
+    return results
+
         
-        ...
-    
-    ...
-    
     
 def detect_downward_curve( data: list[float] ) -> tuple[int, int] :
     
@@ -99,8 +105,23 @@ def detect_downward_curve( data: list[float] ) -> tuple[int, int] :
     return llim, rlim
 
     
-def fit_curve( xs: list[float], ys: list[float], yerrs: float ) :
     
-    return (0, 0), (0, 0), (0, 0)
-    ...
+def fit_for_c( results: list[tuple[int, float]], factor: float ) -> float :
+
+    ls = []
+    Cs = []
+    
+    for l, t in results:
+        
+        ls.append(l)
+        Cs.append(t / factor)
+        
+    (m, q), a = curve_fit( lambda l, C_prime, C0: l * C_prime + C0, ls, Cs )
+    
+    return m
+    
+def fit_for_l(results: list[tuple[int, float]], factor: float ) -> float :
+    
+    return fit_for_c(results, 1/(factor+50))
+    
     
