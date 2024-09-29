@@ -1,6 +1,6 @@
 from tabulate import tabulate
 from decimal import Decimal
-from color import green, azure
+from color import green, azure, red
 
 
 def transpose( vec1: list, vec2: list, end: int = -1 ) -> list[list] : 
@@ -28,6 +28,7 @@ class myFile:
     
     ch1: list[float] = []
     ch2: list[float] = []
+    err: float = []
     
     def __init__ (
         self,
@@ -36,7 +37,8 @@ class myFile:
         quantity:   str,
         delta_t:    float,
         ch1:    list[float],
-        ch2:    list[float]
+        ch2:    list[float],
+        err:        float
     ) -> None :
         
         self.name = name
@@ -45,6 +47,7 @@ class myFile:
         self.delta_t = delta_t
         self.ch1 = ch1
         self.ch2 = ch2
+        self.err = err
         
         return 
     # __init__()
@@ -57,11 +60,14 @@ class myFile:
         
         # '\x1b[6;30;42m' + 'Success!' + '\x1b[0m'
         # '\x1b[93m' + self.quantity +  '\x1b[93m'
-        displ_delta_t = '%.3E' % Decimal(self.delta_t)
-        print("delta t:", green(displ_delta_t) )
+        displ_delta_t   = '%.3E' % Decimal(self.delta_t)
+        displ_err       = '%.1E' % Decimal(self.err)
         
-        # print(self.ch1)
           
+        print(
+            "delta t:", green(displ_delta_t),
+            "with err:", red("±" + displ_err) 
+        )
         print(tabulate(
             transpose(self.ch1, self.ch2, end = lenght), 
             headers=["ch1", "ch2"]

@@ -23,7 +23,7 @@ def rescale( vec: list[float], factor: float) -> list[float] :
     return vec
 
 
-def fit_for_tau( data_files: list[myFile] ) -> dict[str, list[tuple[int, float]]] :
+def fit_for_tau( data_files: list[myFile] ) -> dict[str, list[tuple[int, float, float]]] :
     
     results: dict[str, list] = {"L": [], "C": []}
         
@@ -39,23 +39,24 @@ def fit_for_tau( data_files: list[myFile] ) -> dict[str, list[tuple[int, float]]
         llim, rlim = detect_downward_curve(file.ch1)
         
         discharge = file.ch2[ llim : rlim ]
-        
         time = rescale( list(range(len(discharge))), file.delta_t )
-        # print(len(time), len(discharge))
-        # print(type(time), type(discharge))
         
-        (tau, A, y0), a = curve_fit(
+        (tau, A, y0), errs = curve_fit(
             V,
             numpy.array(time),
             numpy.array(discharge),
-            p0 = (last_tau, A_test, 0)
+            p0 = (last_tau, A_test, 0),
+            sigma = file.err / math.sqrt(12)
         )
         
+        errs = numpy.sqrt(numpy.diag(errs))
+        tau_err = errs[0]
+        
         if file.quantity == "capacity":
-            results["C"].append((file.meters, tau))
+            results["C"].append((file.meters, tau, tau_err))
             
         elif file.quantity == "inductance":
-            results["L"].append((file.meters, tau))
+            results["L"].append((file.meters, tau, tau_err))
             
         else :
             raise "boh"
@@ -104,21 +105,32 @@ def detect_downward_curve( data: list[float] ) -> tuple[int, int] :
     
     return llim, rlim
 
-    
-    
-def fit_for_c( results: list[tuple[int, float]], factor: float ) -> float :
+     
+def fit_for_c(
+    results: list[tuple[int, float, float]],
+    factor: float 
+) -> tuple[float, float] :
 
     ls = []
     Cs = []
+    C_errs = []
     
-    for l, t in results:
+    for l, t, t_err in results:
         
         ls.append(l)
         Cs.append(t / factor)
+        C_errs.append(t_err / factor)
         
-    (m, q), a = curve_fit( lambda l, C_prime, C0: l * C_prime + C0, ls, Cs )
+    (m, q), errs = curve_fit( 
+        lambda l, C_prime, C0: l * C_prime + C0,
+        ls, Cs,
+        sigma= C_errs
+    )
     
-    return m
+    errs = numpy.sqrt(numpy.diag( errs ))
+    
+    return m, errs[0]
+
     
 def fit_for_l(results: list[tuple[int, float]], factor: float ) -> float :
     

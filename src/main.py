@@ -4,30 +4,39 @@ from my_file import myFile
 from process_data import fit_for_tau, fit_for_c, fit_for_l
 import math
 import pprint
+import myutils
 
 
 def ex1():
 
     data_files : list[myFile] = extract_data.extract()
     
+    # for file in data_files:
+    #     file.print()
+    
+    # data_files[0].print()
+    
     # print(data_files)
     
     # y1, y2 = data_files[0].ch1, data_files[0].ch2
     
-    results: dict[str, list[tuple[int,float]]] = fit_for_tau(data_files)
+    results: dict[str, list[tuple[int, float, float]]] = fit_for_tau(data_files)
     
-    pprint.pprint(results)
+    # pprint.pprint(results)
     
-    C_prime = fit_for_c(results["C"], 10_000)
-    L_prime = fit_for_l(results["L"], 47)
+    C_prime, C_err = fit_for_c(results["C"], 10_000)
+    L_prime, L_err = fit_for_l(results["L"], 47)
     
-    print(L_prime)
-    print(C_prime)
+    # print(C_err/C_prime)
+    # print(L_err/L_prime)
     
-    print(math.sqrt(1/L_prime/C_prime))
+    display_C = myutils.sci_err(C_prime, C_err)
+    display_L = myutils.sci_err(L_prime, L_err)
+    
+    print("C' =", display_C)
+    print("L' =", display_L)
     
     
-
 
 
 if __name__ == "__main__":
