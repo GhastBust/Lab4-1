@@ -30,14 +30,14 @@ def ex1():
     # print(C_err/C_prime)
     # print(L_err/L_prime)
     
-    display_C = myutils.sci_err(C_prime, C_err)
-    display_L = myutils.sci_err(L_prime, L_err)
+    display_C = myutils.bsci_err(C_prime, C_err)
+    display_L = myutils.bsci_err(L_prime, L_err)
     
     print( "C' =", display_C )
     print( "L' =", display_L )
     
     v, v_err = get_v_in_medium(C_prime, C_err, L_prime, L_err)
-    display_v = myutils.sci_err(v, v_err)
+    display_v = myutils.bsci_err(v, v_err)
     
     print( "v  =", display_v )
     
@@ -52,5 +52,5 @@ def ex2() :
 
 if __name__ == "__main__":
     
-    ex1()
-    # ex2()
+    # ex1()
+    ex2()
