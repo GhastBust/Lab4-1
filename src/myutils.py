@@ -50,6 +50,14 @@ def weighted_mean_derr( list_of_derr: list[Derr] ):
 
 
 def __get_mag__( number: float ) -> int:
+    """
+    `get_mag( a * 10^2 )` = 2
+    con 1 <= a <= 9.99
+    
+    `get_mag( 1 )` = 0
+    
+    `get_mag( 0.99 )` = -1
+    """
     return int(np.floor(np.log10(abs(number))))
 
 
@@ -79,6 +87,15 @@ def __exponent__(exp: int) -> str:
 
 
 def __get_n_dig__( number: float, n: int ) -> int:
+    """
+    with n = 987654
+    
+    `get_n_dig(n, 0) = 9`
+    
+    `get_n_dig(n, 2) = 7`
+    
+    get the n-th digit of the number, dont try to extact digits too far off, float math... 
+    """
 
     number = abs(number)
 
@@ -99,7 +116,7 @@ def __dsci_not__ ( value:float, digits: int ) -> tuple[str, str, int]:
 
     real_part: float = value / 10**magnitude
 
-    if real_part >= 3:
+    if real_part >= 5:
         real_part /= 10
         magnitude += 1
 
@@ -129,11 +146,56 @@ def sci_err( value: float, err: float, min_digits: float = 4 ):
 
     err += 10**mag
     err_part, _, _ = __dsci_not__(err, digits)
-
     err_part = err_part.replace("1", "0", 1)
 
     # return ret_str + f"{real_part} × 10{__exponent__(magnitude)}" 
     return f"[{real_part} ± {err_part}] × {mag_str}"
+
+
+def __bdsci_not__ ( value:float, digits: int ) -> tuple[str, str, int]:
+    
+    sign_str: str = ""
+
+    if value < 0:
+        sign_str = f"-"
+        value = -value
+
+    magnitude: int = __get_mag__(value)
+
+    base: float = value / 10**magnitude
+
+    base = round(base, digits)
+
+    return sign_str + f"{base}", f"10{__exponent__(magnitude)}", magnitude 
+
+
+def bsci_err(value: float, err: float ) -> str :
+    
+    err = abs(err)
+    
+    value_mag = __get_mag__(value)
+    err_mag   = __get_mag__(err)
+    
+    digits : int = value_mag - err_mag
+        
+    error = round(err, -err_mag)             # arrotonda alla prima cifra
+    if __get_mag__(error) > err_mag:       # se c'è un 0.0099 => 0.01 non 0.010
+        digits -= 1
+    
+    real_part, mag_str, mag = __dsci_not__(value, digits)
+    
+    if digits-1 == -1:
+        error_displ = str(int(__get_n_dig__(error,0)))
+        
+    elif digits - 1 < -1:
+        error_displ = str(int(__get_n_dig__(error,0)))
+        return f"[0.0 ± {error_displ}] × {mag_str}"
+    
+    else:
+        error_displ = "0." + "0"*(digits-1) + str(int(__get_n_dig__(error,0)))
+        
+    return f"[{real_part} ± {error_displ}] × {mag_str}"
+    
 
 
 def nhypot(pos_value: float, *neg_values: float) -> float:
@@ -155,3 +217,4 @@ def phypot( *values: float ) -> float:
         result += value**2
 
     return np.sqrt(result)
+

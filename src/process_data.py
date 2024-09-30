@@ -3,6 +3,7 @@ from scipy.optimize import curve_fit
 import math
 import numpy
 from matplotlib import pyplot as plt
+from myutils import phypot
 
 
 def V( 
@@ -136,4 +137,15 @@ def fit_for_l(results: list[tuple[int, float]], factor: float ) -> float :
     
     return fit_for_c(results, 1/(factor+50))
     
+def get_v_in_medium( 
+    C_prime: float,
+    C_err: float,
+    L_prime: float,
+    L_err: float
+) -> tuple[float, float] :
     
+    v = numpy.sqrt( 1 / C_prime / L_prime )
+    
+    v_err = .5 / numpy.pow(L_prime * C_prime, 1.5) * phypot( L_prime * C_err, C_prime * L_err )
+    
+    return v, v_err
