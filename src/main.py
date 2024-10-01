@@ -1,15 +1,16 @@
 from const import *
-import extract_data
+import ex1.extract_data
 from my_file import myFile
-from process_data import fit_for_tau, fit_for_c, fit_for_l, get_v_in_medium
+from ex1.process_data import fit_for_tau, fit_for_c, fit_for_l, get_v_in_medium
 import math
 import pprint
 import myutils
+from ex2 import extract_data
 
 
 def ex1():
 
-    data_files : list[myFile] = extract_data.extract()
+    data_files : list[myFile] = ex1.extract_data.extract()
     
     # for file in data_files:
     #     file.print()
@@ -46,6 +47,9 @@ def ex1():
     
     
 def ex2() :
+    
+    extract_data.extract()
+    
     pass
     
 

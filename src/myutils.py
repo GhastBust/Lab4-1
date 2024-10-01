@@ -188,7 +188,7 @@ def bsci_err(value: float, err: float ) -> str :
         error_displ = str(int(__get_n_dig__(error,0)))
         
     elif digits - 1 < -1:
-        error_displ = str(int(__get_n_dig__(error,0)))
+        error_displ = str(int(__get_n_dig__(error,digits)))
         return f"[0.0 ± {error_displ}] × {mag_str}"
     
     else:
