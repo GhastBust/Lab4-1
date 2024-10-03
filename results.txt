@@ -5,3 +5,9 @@ L' = [-2.0 ± 0.2] × 10⁻⁷        H / m
 
 velocità della luce nel mezzo stimata:
 v  = [2.3 ± 0.2] × 10⁸          m / s
+
+
+ex 2
+
+v nel medio = [1.972 ± 0.002] × 10⁸ m/s
+Z = [0.53 ± 0.01] × 10²             Ω
