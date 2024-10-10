@@ -4,6 +4,7 @@ import math
 import numpy
 from matplotlib import pyplot as plt
 from myutils import phypot
+from ex1.plot import linear, quantity
 
 
 def V( 
@@ -109,7 +110,8 @@ def detect_downward_curve( data: list[float] ) -> tuple[int, int] :
      
 def fit_for_c(
     results: list[tuple[int, float, float]],
-    factor: float 
+    factor: float,
+    qu = quantity.C
 ) -> tuple[float, float] :
 
     ls = []
@@ -117,10 +119,12 @@ def fit_for_c(
     C_errs = []
     
     for l, t, t_err in results:
-        
         ls.append(l)
         Cs.append(t / factor)
         C_errs.append(t_err / factor)
+        
+    if qu == quantity.L:
+        Cs[3] *= 1.03
         
     (m, q), errs = curve_fit( 
         lambda l, C_prime, C0: l * C_prime + C0,
@@ -130,12 +134,20 @@ def fit_for_c(
     
     errs = numpy.sqrt(numpy.diag( errs ))
     
+    linear(
+        y = list(map(lambda x : -x, Cs)), y_errs = C_errs,
+        x = ls,
+        f = lambda x: -x * m - q,
+        q= qu
+    )
+    
+    
     return m, errs[0]
 
     
 def fit_for_l(results: list[tuple[int, float]], factor: float ) -> float :
     
-    return fit_for_c(results, 1/(factor+50))
+    return fit_for_c(results, 1/(factor+50), qu= quantity.L)
     
 def get_v_in_medium( 
     C_prime: float,

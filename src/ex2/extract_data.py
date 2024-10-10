@@ -5,6 +5,7 @@ from myutils import phypot, bsci_err
 from matplotlib import lines
 import matplotlib.pyplot as plt
 import itertools
+from ex2.plot import gamma_vs_V
 
 
 L =    [ 10,    20,	    30,	    40  ]
@@ -79,53 +80,21 @@ def extract() :
     
     gamma_ff = lambda z_L: gamma_f(z_L, z_fit)
     
-    graph(gamma_from_V, gamma_from_V_err, R, gamma_ff )
-    
+    gamma_vs_V(gamma_from_V, gamma_from_V_err, R, gamma_ff )
     
     display = bsci_err( float(z_fit), float(numpy.sqrt(z_fit_err)) )
     print("Z =", display)
     
+    print(get_chi2(R, gamma_from_V, gamma_from_V_err, gamma_ff)/12)
     
+    
+def get_chi2( x, y, dy, model):
 
-def graph(y: list[float], y_err: float, x: list[float], lenght) :
-    
-    y_err = list(map(lambda x: x*20, y_err))
-    
-    err_bar = plt.errorbar(x= x, y= y, yerr= y_err, fmt= ".")
-    err_bar.set_label("Dati empirici")
-    
-    axes = plt.gca()
-    axes.grid(visible= True, which= "both")
-    
-    xlim = list(axes.get_xlim())
-    
-    ylim = list(axes.get_ylim())
-    
-    # xaxis = lines.Line2D(xdata= )    
-    
-    xaxis = numpy.linspace( max(x), min(x), 100 )
-    yaxis = list(map(lenght, xaxis))
-    
-    fit_curve = plt.plot(xaxis, yaxis, marker = "")[0]
-    fit_curve.set_label("Curva del fit")
+    x = numpy.array(x)
+    y = numpy.array(y)
+    dy = numpy.array(dy)
 
-    plt.axhline(linewidth = .8, color = "k")
-    plt.axvline(linewidth = .8, color = "k")
-    
-    legend = plt.legend()
-    
-    legend.set_label("Legenda")
-    legend.set_loc("lower right")
-    
-    plt.rcParams['text.usetex'] = True
-    
-    axes.set_xlabel(r"Resistenza di carico [$\bf\Omega$]", )
-    axes.set_ylabel("Coefficiente di rifrazione")
-    
-    title = plt.title("Fit per la rifrazione", size = 16, weight = "roman")
-    
-    plt.show()
-
+    return numpy.sum((y - model(x))**2 / (dy*20)**2)
 
 def graph_points(y, y_err, x) :
     pass

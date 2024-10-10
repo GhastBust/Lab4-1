@@ -12,6 +12,9 @@ def extract() -> list[myFile] :
     
     for file in listdir:
         
+        if not file.endswith(".csv"):
+            continue
+        
         err = 10_000
         prev_v = 0
         i = 0
@@ -53,7 +56,7 @@ def extract() -> list[myFile] :
                     ch1.append(float(row[1]))
                     ch2.append(float(row[2]))
                     
-                except ValueError:
+                except :
                     continue
                 
             pass # close file.row    
